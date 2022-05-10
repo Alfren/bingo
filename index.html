@@ -193,18 +193,26 @@
   }
 
   function makeGroup() {
-    let name = $('#groupName').val(), count = shuffle($('#groupCount').val()), next = 0;
-    if (name !== '') {
-      let group = { name, count, next }
-      const store = db.transaction(["Groups"], "readwrite").objectStore("Groups")
-      store.put(group)
-      readDatabase()
-    } else {
+    let name = $('#groupName').val(),
+      count = shuffle($('#groupCount').val());
+    if (name == '') {
       $('#groupName').css({ 'backgroundColor': 'pink' });
       setTimeout(() => {
         $('#groupName').css({ 'backgroundColor': '' });
       }, 2000)
+      return 0
     }
+    if (count.length === 0) {
+      $('#groupCount').css({ 'backgroundColor': 'pink' });
+      setTimeout(() => {
+        $('#groupCount').css({ 'backgroundColor': '' });
+      }, 2000)
+      return 0
+    }
+    let group = { name, count, next: 0 }
+    const store = db.transaction(["Groups"], "readwrite").objectStore("Groups")
+    store.put(group)
+    readDatabase()
   }
 
   async function readDatabase() {
