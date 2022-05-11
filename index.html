@@ -232,8 +232,11 @@
   }
 
   function createGroupOptions(object) {
+    let id = object.name.replaceAll(' ', '_');
+    let prev = 'Previous #: ';
+    object.count.forEach((num, i) => { if (i <= object.next) prev += `${num}${i === object.next ? '' : ', '}` })
     $('#Groups').append(`
-      <details id="selectedGroup_${object.name.replaceAll(' ', '_')}" style="margin-top:5px;" open>
+      <details id="selectedGroup_${id}" style="margin-top:5px;" open>
         <summary>
           <div style="width:77.5px;"></div><h4 class="text-center">${object.name} • ${object.count.length}</h4>
           <button onClick="removeGroup('${object.name}')" class="btn deleteBtn">
@@ -242,9 +245,10 @@
             </svg>
           </button>
         </summary>
-        <h4 class="text-center">Up Next<br/><span id="nextUp_${object.name.replaceAll(' ', '_')}"><span style="font-size: 2.5rem;">${object.next ? object.count[object.next ? parseInt(object.next) - 1 : parseInt(object.next)] : "___"}</span></span></h4>
-        <div class="text-center" id="groupOptions_${object.name.replaceAll(' ', '_')}">
-          ${object.count.length === object.next ? `<button class="btn next-btn" id="resetBtn_${object.name.replaceAll(' ', '_')}" onclick="resetGroup('${object.name}')">Reset</button>` : `<button class="btn next-btn" onClick="revealNext('${object.name}')">Next</button>`}
+        <p id="previous_${id}" class="text-center" style="margin: 0 auto">${prev}</p>
+        <h4 class="text-center">Up Next<br/><span id="nextUp_${id}"><span style="font-size: 2.5rem;">${object.next ? object.count[object.next ? parseInt(object.next) - 1 : parseInt(object.next)] : "___"}</span></span></h4>
+        <div class="text-center" id="groupOptions_${id}">
+          ${object.count.length === object.next ? `<button class="btn next-btn" id="resetBtn_${id}" onclick="resetGroup('${object.name}')">Reset</button>` : `<button class="btn next-btn" onClick="revealNext('${object.name}')">Next</button>`}
         </div>
       </details>
     `);
@@ -255,32 +259,38 @@
   }
 
   function revealNext(name) {
-    $('#groupTitle_' + name.replaceAll(' ', '_')).text(name);
+    let id = name.replaceAll(' ', '_');
+    $('#groupTitle_' + id).text(name);
     let groups = db.transaction(["Groups"], "readwrite").objectStore("Groups");
     groups.get(name).onsuccess = (event) => {
       let item = event.target.result,
         count = item.count,
         next = item.next;
       if (next < count.length) {
-        $('#nextUp_' + name.replaceAll(' ', '_')).html(`<span style="font-size: 2.5rem">${item.count[item.next]}</span>`);
+        let prev = 'Previous #: ';
+        count.forEach((num, i) => { if (i <= next) prev += `${num}${i === next ? '' : ', '}` })
+        $(`#previous_${id}`).html(prev)
+        $('#nextUp_' + id).html(`<span style="font-size: 2.5rem">${item.count[item.next]}</span>`);
         groups.put({
           name: name,
           count: item.count,
           next: item.next + 1 || item.count.length - 1
         });
       } else {
-        $('#nextUp_' + name.replaceAll(' ', '_')).html(`<span style="font-size: 2.5rem;">${item.count[count.length - 1]}</span>`);
-        if (!$(`#resetBtn_${name.replaceAll(' ', '_')}`).length) {
-          $('#groupOptions_' + name.replaceAll(' ', '_')).html(`<button class="btn next-btn" id="resetBtn_${name.replaceAll(' ', '_')}" onclick="resetGroup('${name}')">Reset</button>`);
+        $('#nextUp_' + id).html(`<span style="font-size: 2.5rem;">${item.count[count.length - 1]}</span>`);
+        if (!$(`#resetBtn_${id}`).length) {
+          $('#groupOptions_' + id).html(`<button class="btn next-btn" id="resetBtn_${id}" onclick="resetGroup('${name}')">Reset</button>`);
         }
       }
     }
   }
 
   function resetGroup(name) {
-    $(`#resetBtn_${name.replaceAll(' ', '_')}`).remove()
-    $(`#nextUp_${name.replaceAll(' ', '_')}`).html('<span style="font-size: 2.5rem;">___</span>')
-    $(`#groupOptions_${name.replaceAll(' ', '_')}`).html(`<button class="btn next-btn" onClick="revealNext('${name}')">Next</button>`)
+    let id = name.replaceAll(' ', '_');
+    $(`#resetBtn_${id}`).remove()
+    $(`#previous_${id}`).html('Previous #:')
+    $(`#nextUp_${id}`).html('<span style="font-size: 2.5rem;">___</span>')
+    $(`#groupOptions_${id}`).html(`<button class="btn next-btn" onClick="revealNext('${name}')">Next</button>`)
     let groups = db.transaction(["Groups"], "readwrite").objectStore("Groups");
     groups.get(name).onsuccess = (event) => {
       let item = event.target.result,
