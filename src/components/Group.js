@@ -58,9 +58,9 @@ export default function Group({ group, updateGroup, removeGroup, resetGroup }) {
         </Stack>
       </AccordionDetails>
       <AccordionActions sx={{ justifyContent: "space-between" }}>
-        <IconButton color="error" onClick={() => removeGroup(group.id)}>
+        <Button color="error" onClick={() => removeGroup(group.id)}>
           <Delete />
-        </IconButton>
+        </Button>
         <div>
           {group.next === Number(group.total) && (
             <Button

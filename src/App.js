@@ -70,6 +70,7 @@ export default function App() {
   };
 
   const removeGroup = (id) => {
+    alert(id);
     db.deleteRecord(id).then(
       (resp) => {
         getAllGroups();
