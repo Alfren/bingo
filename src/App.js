@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, IconButton, Typography } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 import NewGroupModal from "./components/NewGroupModal";
 import { initDB, useIndexedDB } from "react-indexed-db";
 import { useSnackbar } from "notistack";
