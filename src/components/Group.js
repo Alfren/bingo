@@ -8,7 +8,6 @@ import {
   Button,
   Chip,
   Grid,
-  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -58,7 +57,7 @@ export default function Group({ group, updateGroup, removeGroup, resetGroup }) {
         </Stack>
       </AccordionDetails>
       <AccordionActions sx={{ justifyContent: "space-between" }}>
-        <Button color="error" onClick={() => removeGroup(group.id)}>
+        <Button color="error" onClick={() => removeGroup(group)}>
           <Delete />
         </Button>
         <div>

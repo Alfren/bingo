@@ -8,7 +8,7 @@ import Group from "./components/Group";
 
 initDB({
   name: "School_Groups",
-  version: 1,
+  version: 2,
   objectStoresMeta: [
     {
       store: "Groups",
@@ -85,8 +85,9 @@ export default function App() {
     );
   };
 
-  const removeGroup = (id) => {
-    db.deleteRecord(id).then(
+  const removeGroup = (group) => {
+    console.log(group.id);
+    db.deleteRecord(group.id).then(
       (resp) => {
         getAllGroups();
       },
