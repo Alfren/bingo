@@ -82,6 +82,11 @@ export default function App() {
     );
   };
 
+  const DeleteDB = () => {
+    db.clear();
+    getAllGroups();
+  };
+
   function shuffle(total, min) {
     // create array of numbers of 'number' length
     let array = Array.from({ length: min + total }, (_, i) => i),
@@ -121,7 +126,12 @@ export default function App() {
       >
         <Add sx={{ fontSize: 35 }} />
       </Button>
-      <NewGroupModal show={show} toggle={toggle} createGroup={createGroup} />
+      <NewGroupModal
+        show={show}
+        toggle={toggle}
+        createGroup={createGroup}
+        DeleteDB={DeleteDB}
+      />
       <Container>
         {groups.map((group) => (
           <Group

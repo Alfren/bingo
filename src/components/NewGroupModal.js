@@ -10,13 +10,21 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function NewGroupModal({ show, toggle, createGroup }) {
+export default function NewGroupModal({ show, toggle, createGroup, DeleteDB }) {
   const [groupName, setGroupName] = useState("");
   const [groupMin, setGroupMin] = useState("");
   const [groupCount, setGroupCount] = useState("");
   return (
     <Modal open={show} onClose={toggle} sx={modalStyle}>
       <Card sx={cardStyle}>
+        <Button
+          color="error"
+          size="small"
+          sx={{ position: "absolute", top: 5, left: 5 }}
+          onClick={DeleteDB}
+        >
+          System Reset
+        </Button>
         <IconButton
           color="error"
           size="large"
@@ -25,7 +33,7 @@ export default function NewGroupModal({ show, toggle, createGroup }) {
         >
           <Close sx={{ fontSize: 35 }} />
         </IconButton>
-        <Typography variant="h4" align="center" mb={2}>
+        <Typography variant="h4" align="center" my={2}>
           Create Group
         </Typography>
         <Grid container columnGap={3} rowGap={2} justifyContent="center">
@@ -33,6 +41,7 @@ export default function NewGroupModal({ show, toggle, createGroup }) {
             <TextField
               label="Group Name"
               value={groupName}
+              autoFocus
               onChange={(e) => setGroupName(e.target.value)}
             />
           </Grid>
