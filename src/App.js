@@ -15,6 +15,7 @@ const App = () => {
   const [groups, setGroups] = useState([]);
   const toggle = () => setShow(!show);
   const [devMode, setDevMode] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { getAll, add, update, clear, deleteRecord } = useIndexedDB("Groups");
 
   const getAllGroups = () => {
@@ -86,8 +87,21 @@ const App = () => {
   };
 
   const DeleteDB = () => {
+    setLoading(true);
     clear();
     getAllGroups();
+    setTimeout(() => {
+      const request = window.indexedDB.deleteDatabase("School_Groups");
+      request.onsuccess = () => {
+        console.log("Database deleted successfully");
+        msg("Database deleted successfully", { variant: "success" });
+        msg("Reloading page in 5 seconds", { variant: "warning" });
+        setTimeout(() => window.location.reload(), 5000);
+      };
+      request.onerror = (e) => {
+        console.error("Error deleting database:", e.target.error);
+      };
+    }, 1000);
   };
 
   function shuffle(total, min) {
@@ -116,12 +130,7 @@ const App = () => {
     });
   };
 
-  useEffect(() => {
-    getAll().then((data) => {
-      setGroups(data);
-    });
-  }, []);
-  console.log("App");
+  useEffect(getAllGroups, []);
 
   return (
     <>
@@ -153,6 +162,7 @@ const App = () => {
         <Add sx={{ fontSize: 35 }} />
       </Button>
       <NewGroupModal
+        loading={loading}
         show={show}
         toggle={toggle}
         createGroup={createGroup}

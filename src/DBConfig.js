@@ -1,6 +1,6 @@
 export const DBConfig = {
   name: "School_Groups",
-  version: 5,
+  version: 6,
   objectStoresMeta: [
     {
       store: "Groups",

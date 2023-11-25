@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Close } from "@mui/icons-material";
 import {
+  Backdrop,
   Button,
   Card,
+  CircularProgress,
   Grid,
   IconButton,
   Modal,
@@ -10,19 +12,23 @@ import {
   Typography,
 } from "@mui/material";
 
-const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
+const NewGroupModal = ({ show, toggle, createGroup, DeleteDB, loading }) => {
   const [groupName, setGroupName] = useState("");
   const [groupMin, setGroupMin] = useState("");
   const [groupCount, setGroupCount] = useState("");
   return (
     <Modal open={show} onClose={toggle} sx={modalStyle}>
       <Card sx={cardStyle}>
+        <Backdrop open={loading}>
+          <CircularProgress size={100} color="white" />
+        </Backdrop>
         <Button
           color="error"
           size="small"
           variant="outlined"
           sx={{ position: "absolute", top: 5, left: 5 }}
           onClick={DeleteDB}
+          disabled={loading}
         >
           System Reset
         </Button>
@@ -31,6 +37,7 @@ const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
           size="large"
           sx={{ position: "absolute", top: 5, right: 5 }}
           onClick={toggle}
+          disabled={loading}
         >
           <Close sx={{ fontSize: 35 }} />
         </IconButton>
@@ -44,6 +51,7 @@ const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
               value={groupName}
               autoFocus
               onChange={(e) => setGroupName(e.target.value)}
+              disabled={loading}
             />
           </Grid>
           <Grid item>
@@ -55,6 +63,7 @@ const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
                 setGroupMin(e.target.value < 0 ? 0 : e.target.value)
               }
               inputProps={{ min: 0 }}
+              disabled={loading}
             />
           </Grid>
           <Grid item>
@@ -66,6 +75,7 @@ const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
                 setGroupCount(e.target.value < 0 ? 0 : e.target.value)
               }
               inputProps={{ min: 0 }}
+              disabled={loading}
             />
           </Grid>
           <Grid item xs={12} align="center">
@@ -73,7 +83,7 @@ const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
               color="success"
               size="large"
               variant="contained"
-              disabled={!groupName || !groupMin || !groupCount}
+              disabled={!groupName || !groupMin || !groupCount || loading}
               onClick={() => {
                 createGroup({ groupName, groupCount, groupMin });
                 setGroupName("");
