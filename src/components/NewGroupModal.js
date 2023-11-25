@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function NewGroupModal({ show, toggle, createGroup, DeleteDB }) {
+const NewGroupModal = ({ show, toggle, createGroup, DeleteDB }) => {
   const [groupName, setGroupName] = useState("");
   const [groupMin, setGroupMin] = useState("");
   const [groupCount, setGroupCount] = useState("");
@@ -20,6 +20,7 @@ export default function NewGroupModal({ show, toggle, createGroup, DeleteDB }) {
         <Button
           color="error"
           size="small"
+          variant="outlined"
           sx={{ position: "absolute", top: 5, left: 5 }}
           onClick={DeleteDB}
         >
@@ -87,7 +88,7 @@ export default function NewGroupModal({ show, toggle, createGroup, DeleteDB }) {
       </Card>
     </Modal>
   );
-}
+};
 
 const modalStyle = {
     width: "1000px",
@@ -97,3 +98,5 @@ const modalStyle = {
   cardStyle = {
     p: 2,
   };
+
+export default NewGroupModal;

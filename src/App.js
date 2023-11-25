@@ -1,39 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import NewGroupModal from "./components/NewGroupModal";
-import { initDB, useIndexedDB } from "react-indexed-db";
+import { initDB, useIndexedDB } from "react-indexed-db-hook";
 import { useSnackbar } from "notistack";
 import { Add } from "@mui/icons-material";
 import Group from "./components/Group";
+import { DBConfig } from "./DBConfig";
 
-initDB({
-  name: "School_Groups",
-  version: 2,
-  objectStoresMeta: [
-    {
-      store: "Groups",
-      storeConfig: { keyPath: "id", autoIncrement: true },
-      storeSchema: [
-        { name: "name", keypath: "name", options: { unique: true } },
-        { name: "count", keypath: "count", options: { unique: false } },
-        { name: "min", keypath: "min", options: { unique: false } },
-        { name: "total", keypath: "total", options: { unique: false } },
-        { name: "next", keypath: "next", options: { unique: false } },
-        { name: "expanded", keypath: "expanded", options: { unique: false } },
-      ],
-    },
-  ],
-});
+initDB(DBConfig);
 
-export default function App() {
+const App = () => {
+  const { enqueueSnackbar: msg } = useSnackbar();
   const [show, setShow] = useState(false);
   const [groups, setGroups] = useState([]);
   const toggle = () => setShow(!show);
-  const db = useIndexedDB("Groups");
-  const { enqueueSnackbar } = useSnackbar();
+  const [devMode, setDevMode] = useState(false);
+  const { getAll, add, update, clear, deleteRecord } = useIndexedDB("Groups");
 
   const getAllGroups = () => {
-    db.getAll().then(
+    getAll().then(
       (resp) => {
         setGroups(resp);
         if (resp.length === 0) {
@@ -46,12 +31,14 @@ export default function App() {
     );
   };
 
-  useEffect(() => {
-    getAllGroups();
-  }, []);
-
   const createGroup = ({ groupName, groupCount, groupMin }) => {
-    db.add({
+    let newId = 0;
+    groups.forEach(({ id }) => {
+      if (id > newId) newId = Number(id);
+    });
+
+    add({
+      id: Number(newId) + 1,
       name: groupName,
       count: shuffle(Number(groupCount), Number(groupMin)),
       min: Number(groupMin),
@@ -61,46 +48,45 @@ export default function App() {
     }).then(
       (resp) => {
         setShow(false);
-        enqueueSnackbar("Group created!", { variant: "success" });
+        msg("Group created!", { variant: "success" });
         getAllGroups();
       },
       (error) => {
         console.error(error);
-        enqueueSnackbar("Error while creating group..", { variant: "error" });
-        enqueueSnackbar(`${error.target.error}`, { variant: "error" });
+        msg("Error while creating group..", { variant: "error" });
+        msg(`${error.target.error}`, { variant: "error" });
       }
     );
   };
 
   const updateGroup = (group) => {
-    db.update(group).then(
+    update(group).then(
       (resp) => {
         getAllGroups();
       },
       (error) => {
         console.error(error);
-        enqueueSnackbar("Error updating group..", { variant: "error" });
-        enqueueSnackbar(`${error.target.error}`, { variant: "error" });
+        msg("Error updating group..", { variant: "error" });
+        msg(`${error.target.error}`, { variant: "error" });
       }
     );
   };
 
   const removeGroup = (group) => {
-    console.log(group.id);
-    db.deleteRecord(group.id).then(
+    deleteRecord(group.id).then(
       (resp) => {
         getAllGroups();
       },
       (error) => {
         console.error(error);
-        enqueueSnackbar("Error removing group..", { variant: "error" });
-        enqueueSnackbar(`${error.target.error}`, { variant: "error" });
+        msg("Error removing group..", { variant: "error" });
+        msg(`${error.target.error}`, { variant: "error" });
       }
     );
   };
 
   const DeleteDB = () => {
-    db.clear();
+    clear();
     getAllGroups();
   };
 
@@ -130,11 +116,34 @@ export default function App() {
     });
   };
 
+  useEffect(() => {
+    getAll().then((data) => {
+      setGroups(data);
+    });
+  }, []);
+  console.log("App");
+
   return (
     <>
-      <Typography color="white" my={2.6}>
-        Made with ❤ by Mein Mann, Wizard
+      <Typography color="white" mb={3}>
+        Made with <span onClick={() => setDevMode(!devMode)}>❤</span> by Mein
+        Mann, Wizard
       </Typography>
+      {devMode && (
+        <Box
+          sx={{
+            background: "#111",
+            p: 2,
+            m: 2,
+            maxHeight: 500,
+            overflowY: "auto",
+          }}
+        >
+          <Typography variant="body1" color="white">
+            {JSON.stringify(groups)}
+          </Typography>
+        </Box>
+      )}
       <Button
         color="warning"
         variant="contained"
@@ -162,4 +171,6 @@ export default function App() {
       </Container>
     </>
   );
-}
+};
+
+export default App;

@@ -9,17 +9,17 @@ import { SnackbarProvider } from "notistack";
 const theme = createTheme({
   palette: {
     mode: "dark",
-    primary: cyan,
+    primary: { main: cyan[500] },
   },
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider maxSnack={3}>
-      <React.StrictMode>
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider maxSnack={3}>
         <App />
-      </React.StrictMode>
-    </SnackbarProvider>
-  </ThemeProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+  </React.StrictMode>
 );

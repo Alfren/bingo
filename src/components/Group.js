@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function Group({ group, updateGroup, removeGroup, resetGroup }) {
+const Group = ({ group, updateGroup, removeGroup, resetGroup }) => {
   return (
     <Accordion
       expanded={group.expanded}
@@ -60,27 +60,26 @@ export default function Group({ group, updateGroup, removeGroup, resetGroup }) {
         <Button color="error" onClick={() => removeGroup(group)}>
           <Delete />
         </Button>
-        <div>
-          {group.next === Number(group.total) && (
-            <Button
-              color="warning"
-              onClick={() => resetGroup(group)}
-              sx={{ mr: 6 }}
-            >
-              Reset
-            </Button>
-          )}
-          <Button
-            color="primary"
-            disabled={group.next >= group.total}
-            onClick={() =>
-              updateGroup({ ...group, next: Number(group.next) + 1 })
-            }
-          >
-            Next
-          </Button>
-        </div>
+        <Button
+          color="warning"
+          onClick={() => resetGroup(group)}
+          variant={group.next === Number(group.total) ? "contained" : "text"}
+          sx={{ mr: 6 }}
+        >
+          Reset
+        </Button>
+        <Button
+          color="primary"
+          disabled={group.next >= group.total}
+          onClick={() =>
+            updateGroup({ ...group, next: Number(group.next) + 1 })
+          }
+        >
+          Next
+        </Button>
       </AccordionActions>
     </Accordion>
   );
-}
+};
+
+export default Group;
